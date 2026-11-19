@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>UChatt</title>
+<style>
+:root{--hd:#008069;--bg:#efeae2;--panel:#fff;--text:#111b21;--muted:#667781;--line:#e9edef;--mine:#d9fdd3;--other:#fff;--acc:#00a884;--chip:#f0f2f5;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--hd:#202c33;--bg:#0b141a;--panel:#111b21;--text:#e9edef;--muted:#8696a0;--line:#222d34;--mine:#005c4b;--other:#202c33;--acc:#00a884;--chip:#202c33;color-scheme:dark}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--panel);color:var(--text);font-size:15px;line-height:1.4}
+.hide{display:none!important}
+#app{height:100%;max-width:640px;margin:0 auto;background:var(--panel);position:relative;overflow:hidden}
+.err{color:#e5484d;font-size:13px;min-height:16px}
+#auth{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;text-align:center}
+.logo{width:80px;height:80px;border-radius:24px;background:var(--acc);display:grid;place-items:center;font-size:40px;margin-bottom:14px}
+#auth h1{margin:0 0 6px;font-size:28px}#auth p{color:var(--muted);max-width:300px;margin:0 0 20px}
+.card{width:100%;max-width:340px;display:flex;flex-direction:column;gap:10px}
+input[type=text],input:not([type]){padding:13px 15px;border-radius:12px;border:1.5px solid var(--line);background:var(--chip);color:var(--text);font:inherit;font-size:16px;outline:none}
+.btn{border:0;border-radius:12px;padding:13px;background:var(--acc);color:#fff;font:inherit;font-weight:700;font-size:16px;cursor:pointer}
+.btn.s{padding:8px 14px;font-size:14px;border-radius:999px}
+#main{height:100%;display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top,0px) + 12px) 14px 12px;background:var(--hd);color:#fff;min-height:58px}
+header b{font-size:19px;flex:1}
+.ib{border:0;background:none;color:inherit;font-size:22px;cursor:pointer;padding:6px 8px;border-radius:50%;line-height:1}
+#body{flex:1;min-height:0;position:relative}
+.v{position:absolute;inset:0;overflow-y:auto}
+nav{display:flex;border-top:1px solid var(--line);background:var(--panel);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;border:0;background:none;color:var(--muted);padding:9px 0 7px;font:inherit;font-size:11px;cursor:pointer}
+nav button span{display:block;font-size:21px}
+nav button.on{color:var(--acc);font-weight:700}
+.av{border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;flex:0 0 auto;overflow:hidden;text-transform:uppercase}
+.av img{width:100%;height:100%;object-fit:cover}
+.li{display:flex;align-items:center;gap:12px;padding:10px 16px;cursor:pointer;border-bottom:1px solid var(--line)}
+.li .t{flex:1;min-width:0}.li .t b{display:block}.li .t small{color:var(--muted);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sec{padding:14px 16px 6px;font-size:12px;font-weight:700;color:var(--acc);text-transform:uppercase;letter-spacing:.5px}
+.ring{padding:3px;border-radius:50%;background:linear-gradient(135deg,#feda75,#fa7e1e,#d62976,#962fbf);flex:0 0 auto;display:grid}
+.ring .av{border:2px solid var(--panel)}
+.pad{padding:16px}
+.fs{display:flex;gap:8px;padding:12px 16px}.fs input{flex:1;min-width:0}
+#vconv{display:flex;flex-direction:column;background-color:var(--bg);background-image:radial-gradient(rgba(128,128,128,.12) 1px,transparent 1px);background-size:18px 18px}
+#msgs{flex:1;overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;gap:3px}
+.day{align-self:center;font-size:11px;background:var(--chip);color:var(--muted);padding:3px 10px;border-radius:8px;margin:6px 0}
+.r{display:flex;align-items:flex-end;gap:6px;max-width:84%}
+.r.me{align-self:flex-end;flex-direction:row-reverse}
+.r.gap{margin-top:8px}.r .sp{width:28px;flex:0 0 auto}
+.bub{padding:6px 9px 5px;border-radius:10px;background:var(--other);box-shadow:0 1px 1px rgba(0,0,0,.13);overflow-wrap:anywhere;min-width:60px}
+.r.me .bub{background:var(--mine)}
+.nm{font-size:12.5px;font-weight:700;margin-bottom:1px}
+.tm{font-size:10.5px;color:var(--muted);float:right;margin:5px 0 0 10px}
+.mi{display:block;max-width:100%;width:250px;border-radius:8px;margin-bottom:3px;cursor:pointer}
+.au{width:220px;max-width:100%;height:40px}
+.loc{display:block;padding:10px;border-radius:8px;background:var(--chip);color:var(--acc);font-weight:600;text-decoration:none;margin-bottom:3px}
+#rec{text-align:center;padding:6px;font-size:13px;background:#e5484d;color:#fff}
+form{display:flex;gap:6px;align-items:center;padding:8px 8px calc(env(safe-area-inset-bottom,0px) + 8px);background:var(--chip)}
+form input[type=text]{flex:1;min-width:0;border-radius:999px;background:var(--panel);border:0;padding:12px 16px}
+form .ib{color:var(--muted);font-size:23px}
+.ib.red{color:#e5484d}
+.send{width:44px;height:44px;border:0;border-radius:50%;background:var(--acc);color:#fff;font-size:18px;cursor:pointer;flex:0 0 auto}
+#sv{position:absolute;inset:0;background:#000;z-index:20;display:flex;align-items:center;justify-content:center;color:#fff;cursor:pointer}
+#sv img,#sv video{max-width:100%;max-height:100%}
+#sv .tx{font-size:26px;font-weight:700;text-align:center;padding:30px;width:100%;height:100%;display:grid;place-items:center;background:linear-gradient(135deg,#6a5cff,#d62976)}
+#sv .meta{position:absolute;top:calc(env(safe-area-inset-top,0px) + 12px);left:14px;display:flex;gap:8px;align-items:center;text-shadow:0 1px 3px #000}
+#boot{position:absolute;inset:0;z-index:40;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:var(--panel);color:var(--muted);padding:24px;text-align:center}
+#toast{position:absolute;left:50%;bottom:80px;transform:translateX(-50%);background:#222;color:#fff;padding:9px 16px;border-radius:999px;font-size:13px;opacity:0;pointer-events:none;transition:.2s;z-index:30;max-width:90%;text-align:center}
+#toast.on{opacity:1}
+
+/* ===== UChatt sky-blue refresh ===== */
+:root{
+ --hd:#ffffff;--bg:#f3f9fd;--panel:#ffffff;--text:#20384b;--muted:#8293a0;
+ --line:#e7eff5;--mine:#dff2ff;--other:#ffffff;--acc:#55b5e6;--chip:#f2f8fc;
+ color-scheme:light
+}
+body{background:#f4f9fd;color:var(--text);font-size:15px}
+#app{max-width:520px;box-shadow:0 0 36px rgba(49,117,157,.08);border-left:1px solid #edf3f7;border-right:1px solid #edf3f7}
+header{background:rgba(255,255,255,.96);color:#20384b;border-bottom:1px solid var(--line);box-shadow:0 2px 12px rgba(37,91,125,.04)}
+header b{font-size:19px;letter-spacing:-.3px}
+.ib{color:#579fc7}
+.btn,.send{background:linear-gradient(135deg,#65c2ec,#4ca9dc);box-shadow:0 5px 14px rgba(77,174,222,.16)}
+.btn{border-radius:14px}
+.btn.s{box-shadow:none}
+input[type=text],input:not([type]){background:#f6fafd;border:1px solid #e4eef5;border-radius:14px}
+nav{background:rgba(255,255,255,.97);border-top:1px solid #e8f0f5;box-shadow:0 -5px 18px rgba(33,88,120,.035)}
+nav button{font-size:11px;padding:10px 0 8px}
+nav button span{font-size:22px}
+nav button.on{color:#329acb}
+.li{padding:13px 16px;border-bottom:1px solid #f0f4f7}
+.sec{color:#399bc9;letter-spacing:.7px}
+.av{background:linear-gradient(135deg,#b7e8fb,#55b6e5)!important;color:#155b82}
+#vconv{background-color:#f2f8fc;background-image:radial-gradient(rgba(90,163,201,.10) 1px,transparent 1px)}
+.bub{border:1px solid #e7eff5;border-radius:14px;box-shadow:0 2px 7px rgba(45,100,133,.05)}
+.r.me .bub{background:#e1f3ff;border-color:#d3ebfa}
+#msgs{padding:14px 12px}
+form{background:#fff;border-top:1px solid #e9f1f6}
+form input[type=text]{background:#f4f9fc;border:1px solid #edf3f7}
+.send{border-radius:15px}
+#auth .logo{background:linear-gradient(135deg,#a8e2fa,#4aaee0);box-shadow:0 10px 25px rgba(74,174,224,.2)}
+#toast{background:#24465c;box-shadow:0 6px 20px rgba(24,55,75,.18)}
+/* Instagram-like profile: compact sizing tuned for phone screens */
+.profile-wrap{padding:16px 16px 12px}
+.profile-topline{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.profile-handle{font-size:18px;font-weight:800;letter-spacing:-.35px}
+.profile-more{width:38px;height:38px;border:0;border-radius:13px;background:#eff8fd;color:#4b9fc9;font-size:21px}
+.profile-stats{display:grid;grid-template-columns:88px repeat(3,minmax(0,1fr));align-items:center;gap:5px;margin:8px 0 18px}
+.profile-avatar-wrap{position:relative;width:88px;height:88px;border-radius:50%;padding:3px;border:2px solid #a9ddf4}
+.profile-avatar-wrap .av{width:100%!important;height:100%!important;font-size:30px!important;border:2px solid white}
+.profile-edit-avatar{position:absolute;right:-2px;bottom:-1px;width:27px;height:27px;border:2px solid white;border-radius:50%;background:#55b5e6;color:white;display:grid;place-items:center;font-size:12px}
+.stat{text-align:center;min-width:0}
+.stat strong{display:block;font-size:19px;line-height:1.2;font-weight:800;color:#20384b}
+.stat span{display:block;font-size:11px;line-height:1.3;color:#8293a0;white-space:nowrap}
+.profile-name{font-size:17px;font-weight:800;margin:0 0 3px}
+.profile-bio{font-size:14px;color:#647b8a;margin:0 0 15px;white-space:pre-wrap}
+.profile-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 42px;gap:7px;margin-bottom:20px}
+.profile-action{height:42px;border:0;border-radius:12px;background:#eef7fd;color:#31566d;font-weight:750;font-size:12px}
+.profile-action.icon{font-size:17px}
+.profile-section-title{display:flex;align-items:center;justify-content:space-between;font-size:15px;font-weight:800;margin:0 0 10px}
+.profile-section-title button{border:0;background:none;color:#399bc9;font-weight:750;font-size:12px}
+.profile-search{padding:11px 13px;border:1px solid #e3edf4;border-radius:14px;background:#f6fafd;color:#8798a4;font-size:12px;margin-bottom:17px;cursor:pointer}
+.profile-tabs{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #e8eff4;border-bottom:1px solid #e8eff4}
+.profile-tab{height:44px;border:0;background:white;color:#8293a0;font-weight:750;font-size:12px}
+.profile-tab.active{color:#399bc9;border-bottom:2px solid #55b5e6}
+.profile-empty{text-align:center;padding:32px 12px 28px;color:#8293a0}
+.profile-empty-icon{width:60px;height:60px;border:2px solid #a8d9f0;border-radius:50%;display:grid;place-items:center;margin:0 auto 12px;color:#399bc9;font-size:22px}
+.profile-empty strong{display:block;color:#31566d;font-size:16px;margin-bottom:6px}
+.profile-empty p{font-size:12px;margin:0 0 14px}
+@media(max-width:360px){.profile-stats{grid-template-columns:76px repeat(3,minmax(0,1fr));gap:3px}.profile-avatar-wrap{width:76px;height:76px}.stat span{font-size:10px}.profile-wrap{padding-left:12px;padding-right:12px}}
+.reply-bar{display:flex;align-items:center;gap:10px;padding:9px 13px;background:#fff;border-top:1px solid #e8f0f5}
+.reply-bar .reply-content{flex:1;min-width:0;border-left:3px solid #55b5e6;padding-left:9px}
+.reply-bar b{display:block;color:#399bc9;font-size:12px}
+.reply-bar small{display:block;color:#8293a0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.reply-cancel{border:0;background:#eff7fc;color:#628398;border-radius:50%;width:30px;height:30px;font-size:18px}
+.reply-quote{border-left:3px solid #55b5e6;background:rgba(85,181,230,.10);padding:6px 8px;border-radius:7px;margin-bottom:5px}
+.reply-quote b{display:block;font-size:11px;color:#399bc9}
+.reply-quote span{font-size:12px;color:#617b8d}
+.r{touch-action:pan-y}
+@media(min-width:700px){#app{max-width:560px}.profile-wrap{padding-left:26px;padding-right:26px}}
+
+
+.profile-modal-backdrop{position:absolute;inset:0;z-index:35;background:rgba(24,54,73,.38);display:flex;align-items:center;justify-content:center;padding:20px}
+.profile-modal{width:100%;max-width:390px;background:#fff;border-radius:22px;padding:22px;box-shadow:0 18px 50px rgba(28,74,103,.22)}
+.profile-modal h3{margin:0 0 16px;color:#20384b;font-size:20px}
+.profile-modal label{display:block;color:#647b8a;font-size:12px;font-weight:700;margin:12px 0 6px}
+.profile-modal input{width:100%;padding:12px 13px;border:1px solid #e3edf4;border-radius:12px;background:#f7fbfe;color:#20384b;font:inherit}
+.profile-modal textarea{width:100%;min-height:78px;resize:vertical;padding:12px 13px;border:1px solid #e3edf4;border-radius:12px;background:#f7fbfe;color:#20384b;font:inherit}
+.profile-modal-actions{display:flex;gap:9px;margin-top:18px}
+.profile-modal-actions button{flex:1}
+.auth-switch{border:0;background:transparent;color:#399bc9;font:inherit;font-weight:700;padding:8px;cursor:pointer}
+.auth-note{display:block;color:#8293a0;font-size:11px;line-height:1.45;margin-top:2px}
+.profile-modal .hint{display:block;color:#8293a0;font-size:11px;line-height:1.4;margin-top:5px}
+.profile-modal input[type=password]{width:100%;padding:12px 13px;border:1px solid #e3edf4;border-radius:12px;background:#f7fbfe;color:#20384b;font:inherit}
+
+
+/* ===== Auth form polish: equal-width, rounded fields ===== */
+#auth{min-height:100%;height:100%;overflow-y:auto;justify-content:center;padding:clamp(22px,5vh,48px) 22px calc(22px + env(safe-area-inset-bottom,0px));}
+#auth .logo{width:76px;height:76px;border-radius:23px;font-size:38px;margin-bottom:12px;flex:0 0 auto}
+#auth h1{font-size:30px;letter-spacing:-.7px;margin-bottom:5px}
+#auth p{font-size:14px;line-height:1.5;max-width:310px;margin-bottom:22px}
+#auth .card{width:100%;max-width:390px;gap:11px;align-items:stretch}
+#auth #register-fields,#auth #confirm-wrap{display:block;width:100%;margin:0}
+#auth #register-fields.hide,#auth #confirm-wrap.hide{display:none}
+#auth .card input[type="text"],#auth .card input[type="password"],#auth .card input:not([type]){
+ display:block;width:100%;min-width:0;height:54px;padding:0 17px;margin:0;border:1px solid #e2edf5;border-radius:17px;
+ background:#f4f9fd;color:#20384b;font:inherit;font-size:15px;line-height:normal;box-shadow:inset 0 1px 1px rgba(28,83,115,.025);outline:none;
+ -webkit-appearance:none;appearance:none;
+}
+#auth .card input::placeholder{color:#91a0aa;opacity:1}
+#auth .card input:focus{border-color:#75c5e9;box-shadow:0 0 0 3px rgba(85,181,230,.13);background:#fff}
+#auth #go{width:100%;height:54px;border-radius:17px;margin-top:3px;font-size:15px}
+#auth .auth-switch{font-size:14px;padding:9px 6px}
+#auth .err{width:100%;font-size:12px;line-height:1.45;overflow-wrap:anywhere}
+#auth .auth-note{max-width:340px;margin:0 auto;font-size:11px;line-height:1.5}
+/* Swipe-to-reply follows the finger, then springs back */
+.r{position:relative;will-change:transform;transition:transform .24s cubic-bezier(.2,.8,.2,1);}
+.r.swiping{transition:none;}
+.r .swipe-reply-hint{position:absolute;left:-31px;bottom:7px;width:25px;height:25px;border-radius:50%;display:grid;place-items:center;background:#e4f4fd;color:#319acb;font-size:15px;opacity:0;transform:scale(.72);transition:opacity .08s linear,transform .08s linear;pointer-events:none;}
+.r.me .swipe-reply-hint{left:auto;right:-31px;}
+@media(max-height:650px){#auth{justify-content:flex-start;padding-top:18px}#auth .logo{width:62px;height:62px;font-size:31px;margin-bottom:8px}#auth p{margin-bottom:14px}}
+
+
+/* Jump-to-latest control inspired by chat apps */
+#jumpLatest{
+  position:absolute;right:14px;bottom:78px;z-index:12;
+  width:46px;height:46px;border:0;border-radius:50%;
+  background:#344653;color:#f7fbff;
+  box-shadow:0 5px 18px rgba(22,45,60,.24);
+  display:grid;place-items:center;cursor:pointer;
+  opacity:0;transform:translateY(10px) scale(.9);
+  pointer-events:none;transition:opacity .2s,transform .2s;
+}
+#jumpLatest.visible{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+#jumpLatest svg{width:25px;height:25px;stroke:currentColor;stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
+#messageActions{
+  position:absolute;inset:0;z-index:35;background:rgba(16,35,49,.22);
+  display:flex;align-items:flex-end;justify-content:center;padding:14px;
+}
+#messageActions.hide{display:none!important}
+#messageActions .action-sheet{
+  width:min(100%,420px);background:#fff;border:1px solid #e7eff5;
+  border-radius:20px;padding:9px;box-shadow:0 14px 38px rgba(20,54,75,.2);
+  animation:sheetIn .18s ease-out;
+}
+#messageActions .action-title{padding:9px 12px 12px;color:#8293a0;font-size:12px}
+#messageActions button{
+  width:100%;border:0;background:transparent;text-align:left;padding:14px 13px;
+  border-radius:12px;color:#29465a;font:inherit;font-size:14px;font-weight:650;
+}
+#messageActions button:active{background:#eef7fc}
+#messageActions button.danger{color:#d94c58}
+#messageActions button.cancel{background:#f2f8fc;text-align:center;margin-top:5px}
+@keyframes sheetIn{from{transform:translateY(18px);opacity:.5}to{transform:translateY(0);opacity:1}}
+.r{transition:transform .18s ease}
+.r.swiping{transition:none}
+
+
+/* ===== UChatt navigation polish ===== */
+#nav{gap:2px;padding-top:5px}
+#nav button{
+  position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;min-height:58px;padding:5px 0 7px;border-radius:15px;
+  color:#93a3ad;background:transparent;transition:color .22s ease,background .22s ease,transform .18s ease;
+  -webkit-tap-highlight-color:transparent
+}
+#nav button span{
+  width:34px;height:31px;display:grid;place-items:center;border-radius:12px;
+  font-size:0;transition:background .22s ease,transform .22s ease,color .22s ease
+}
+#nav button span svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;transition:transform .22s ease}
+#nav button.on{color:#319dce;font-weight:750}
+#nav button.on span{background:#e5f5fd;transform:translateY(-2px)}
+#nav button.on span svg{stroke-width:2.35;transform:scale(1.06)}
+#nav button:active{transform:scale(.94)}
+#nav button:focus-visible{outline:2px solid #78c7ec;outline-offset:2px}
+#nav button.on:after{
+ content:"";position:absolute;bottom:1px;width:17px;height:3px;border-radius:4px;background:#55b5e6;
+ animation:navMark .22s ease-out
+}
+@keyframes navMark{from{width:4px;opacity:.3}to{width:17px;opacity:1}}
+/* ===== Friends / Discover ===== */
+.friends-page{padding:18px 16px 24px}
+.discover-hero{
+ position:relative;overflow:hidden;padding:22px 20px 20px;border-radius:26px;
+ background:linear-gradient(135deg,#eefaff 0%,#e5f5fd 58%,#d9f0fc 100%);
+ border:1px solid #dceef7;box-shadow:0 8px 24px rgba(54,142,185,.07);margin:10px 0 22px
+}
+.discover-hero:before{content:"";position:absolute;width:190px;height:190px;border-radius:50%;right:-55px;top:-80px;background:rgba(117,201,238,.16)}
+.discover-kicker{position:relative;color:#4b9fc6;font-size:11px;font-weight:850;letter-spacing:2px;margin-bottom:12px}
+.discover-hero h2{position:relative;margin:0 0 8px;font-size:21px;line-height:1.25;color:#24465c;letter-spacing:-.45px}
+.discover-hero p{position:relative;margin:0 0 17px;color:#8196a3;font-size:14px;line-height:1.45}
+.discover-search{position:relative;display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #dfebf1;border-radius:19px;padding:0 14px;box-shadow:0 3px 10px rgba(45,101,131,.045)}
+.discover-search svg{width:20px;height:20px;stroke:#72a9c5;fill:none;stroke-width:2}
+.discover-search input{flex:1;min-width:0;border:0!important;outline:0;background:transparent!important;border-radius:18px!important;padding:15px 0!important;color:#29485c;font-size:15px}
+.discover-foot{position:relative;margin-top:14px;color:#8297a4;font-size:12px}
+.friends-section-title{display:flex;align-items:center;justify-content:space-between;margin:4px 2px 11px;color:#29475b;font-size:16px;font-weight:800}
+.friends-count{font-size:12px;color:#8da0ab;font-weight:600}
+.friend-card{
+ display:flex;align-items:center;gap:12px;padding:12px 13px;margin:0 0 9px;
+ border:1px solid #e8f0f5;border-radius:18px;background:#fff;
+ box-shadow:0 3px 12px rgba(33,88,120,.035);transition:transform .16s,border-color .16s
+}
+.friend-card:active{transform:scale(.985);border-color:#b9e2f5}
+.friend-card .friend-info{flex:1;min-width:0}
+.friend-card .friend-info b{display:block;font-size:14px;color:#29475b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.friend-card .friend-info small{display:block;margin-top:3px;color:#91a1aa;font-size:12px}
+.friend-chat{border:0;border-radius:13px;background:#eaf7fd;color:#329bc9;font-weight:750;padding:9px 12px}
+.friend-empty{border:1px dashed #d8e8f0;border-radius:22px;padding:28px 18px;text-align:center;color:#879ba7;background:#fbfdfe}
+.friend-empty .symbol{width:52px;height:52px;border-radius:17px;margin:0 auto 12px;display:grid;place-items:center;background:#e9f7fd;color:#4ba8d3;font-size:24px}
+.friend-empty b{display:block;color:#607f91;margin-bottom:7px}
+.friend-empty p{font-size:13px;line-height:1.5;margin:0}
+/* ===== Full-screen story viewer ===== */
+#sv{display:block;overflow:hidden;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+#sv .story-media{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#080b0e}
+#sv .story-text{position:absolute;inset:0;display:grid;place-items:center;padding:38px 26px;text-align:center;font-size:27px;font-weight:750;line-height:1.35;background:linear-gradient(145deg,#5ab9e7,#b4e5fa);color:#fff}
+#sv .story-top{position:absolute;z-index:3;top:calc(env(safe-area-inset-top,0px) + 10px);left:10px;right:10px}
+#sv .story-bars{display:flex;gap:4px;margin-bottom:12px}
+#sv .story-segment{height:3px;flex:1;border-radius:9px;background:rgba(255,255,255,.34);overflow:hidden}
+#sv .story-segment i{display:block;width:0;height:100%;background:#fff;border-radius:9px}
+#sv .story-meta{display:flex;align-items:center;gap:9px;color:#fff;text-shadow:0 1px 4px #000}
+#sv .story-meta .av{width:34px!important;height:34px!important;border:1px solid rgba(255,255,255,.8)}
+#sv .story-meta strong{font-size:13px}
+#sv .story-meta small{display:block;font-size:10px;opacity:.82}
+#sv .story-close{margin-left:auto;border:0;background:rgba(0,0,0,.25);color:#fff;width:34px;height:34px;border-radius:50%;font-size:20px}
+#sv .story-zone{position:absolute;z-index:2;top:65px;bottom:100px;width:35%}
+#sv .story-zone.left{left:0}
+#sv .story-zone.right{right:0;width:65%}
+#sv .story-reply-hint{position:absolute;z-index:4;bottom:calc(env(safe-area-inset-bottom,0px) + 25px);left:50%;transform:translateX(-50%);color:#fff;font-size:12px;text-shadow:0 1px 4px #000;opacity:.92;white-space:nowrap}
+#sv .story-reply-panel{position:absolute;z-index:6;left:0;right:0;bottom:0;padding:16px 12px calc(env(safe-area-inset-bottom,0px) + 12px);background:linear-gradient(transparent,rgba(0,0,0,.75) 22%);transform:translateY(110%);transition:transform .22s ease}
+#sv.reply-open .story-reply-panel{transform:translateY(0)}
+#sv .story-reply-row{display:flex;gap:8px;align-items:center}
+#sv .story-reply-row input{flex:1;min-width:0;border:1px solid rgba(255,255,255,.55)!important;border-radius:24px!important;background:rgba(255,255,255,.16)!important;color:#fff!important;padding:12px 15px!important}
+#sv .story-reply-row input::placeholder{color:rgba(255,255,255,.82)}
+#sv .story-reply-row button{border:0;border-radius:50%;width:42px;height:42px;background:#55b5e6;color:#fff;font-size:18px}
+#sv .story-reply-caption{color:#fff;font-size:11px;margin:0 0 8px 6px;opacity:.85}
+@media(prefers-reduced-motion:reduce){#nav button,#nav button span,#nav button span svg{transition:none!important}}
+
+
+/* ===== Public user profile ===== */
+#publicProfile{position:fixed;inset:0;z-index:120;background:#fff;overflow:auto;display:none}
+#publicProfile.open{display:block;animation:profileIn .2s ease-out}
+@keyframes profileIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.public-head{height:52px;display:flex;align-items:center;gap:12px;padding:0 16px;border-bottom:1px solid #edf2f5;position:sticky;top:0;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);z-index:2}
+.public-back{border:0;background:#eef8fd;color:#399bc9;width:34px;height:34px;border-radius:12px;font-size:20px}
+.public-head b{font-size:16px;color:#263f52}
+.public-wrap{padding:20px 17px 30px;max-width:520px;margin:auto}
+.public-top{display:flex;align-items:center;gap:18px;margin:8px 0 20px}
+.public-avatar{width:112px;height:112px;border-radius:50%;padding:4px;border:2px solid #a8ddf4;flex:none;cursor:zoom-in}
+.public-avatar .av{width:100%!important;height:100%!important;border:2px solid white;font-size:38px!important}
+.public-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;flex:1;text-align:center}
+.public-stats strong{display:block;color:#253f52;font-size:19px}
+.public-stats span{font-size:12px;color:#8295a2}
+.public-name{font-size:20px;font-weight:850;color:#243e52;margin:0 0 3px}
+.public-handle{font-size:13px;color:#8a9ca8;margin-bottom:9px}
+.public-bio{font-size:14px;color:#506b7c;white-space:pre-wrap;line-height:1.5;margin-bottom:15px}
+.public-phone{display:flex;align-items:center;gap:9px;border:1px solid #e7eff4;border-radius:14px;padding:11px 13px;margin:13px 0;color:#456276;font-size:13px}
+.public-actions{display:flex;gap:9px;margin:16px 0 22px}
+.public-actions button{flex:1;border:0;border-radius:13px;padding:11px 10px;background:#eaf7fd;color:#328fba;font-weight:750}
+.public-actions button.primary{background:#55b5e6;color:#fff}
+.public-content-empty{text-align:center;padding:30px 12px;color:#8799a5;border-top:1px solid #edf2f5}
+.public-content-empty b{display:block;color:#607d8f;margin:8px 0}
+#avatarZoom{position:fixed;inset:0;z-index:150;background:rgba(5,16,25,.94);display:none;align-items:center;justify-content:center;padding:24px}
+#avatarZoom.open{display:flex}
+#avatarZoom img{max-width:92vw;max-height:82vh;object-fit:contain;border-radius:8px}
+#avatarZoom .zoom-close{position:absolute;top:calc(env(safe-area-inset-top,0px) + 16px);right:18px;border:0;border-radius:50%;width:40px;height:40px;background:rgba(255,255,255,.18);color:white;font-size:24px}
+.chat-profile-trigger{cursor:pointer}
+.chat-profile-trigger:active{opacity:.72}
+
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="boot">Memuat UChat…</div>
+  <section id="auth" class="hide">
+    <div class="logo">💬</div><h1>UChatt</h1>
+    <p id="auth-subtitle">Masuk dan lanjutkan obrolanmu bersama teman-teman.</p>
+    <div class="card">
+      <div id="register-fields" class="hide">
+        <input id="dn" type="text" maxlength="30" placeholder="Nama tampilan" autocomplete="name">
+      </div>
+      <input id="un" type="text" maxlength="20" placeholder="Username" autocapitalize="none" autocomplete="username">
+      <input id="pw" type="password" minlength="8" placeholder="Password (minimal 8 karakter)" autocomplete="current-password">
+      <div id="confirm-wrap" class="hide"><input id="pw2" type="password" minlength="8" placeholder="Ulangi password" autocomplete="new-password"></div>
+      <button class="btn" id="go">Masuk</button>
+      <button class="auth-switch" id="auth-switch" type="button">Belum punya akun? Daftar</button>
+      <div id="aerr" class="err"></div>
+      <small class="auth-note">Tidak perlu memasukkan email. Akun tersimpan di Supabase; gunakan username dan password yang sama saat kembali.</small>
+    </div>
+  </section>
+
+  <section id="main" class="hide">
+    <header><button class="ib hide" id="bk">←</button><div id="hav" class="hide"></div><b id="ttl">UChat</b></header>
+    <div id="body">
+      <div id="vchats" class="v"></div>
+      <div id="vstatus" class="v hide"></div>
+      <div id="vfriends" class="v hide"></div>
+      <div id="vme" class="v hide"></div>
+      <div id="vconv" class="v hide">
+        <div id="msgs"></div>
+        <div id="replybar" class="reply-bar hide"><div class="reply-content"><b>Membalas pesan</b><small id="replytext"></small></div><button type="button" class="reply-cancel" id="replycancel">×</button></div>
+        <div id="rec" class="hide">🔴 Merekam… tekan 🎤 lagi untuk mengirim</div>
+        <form id="f">
+          <label class="ib" for="fi">📎</label><input id="fi" type="file" accept="image/*,video/*" hidden>
+          <button type="button" class="ib" id="loc">📍</button>
+          <input id="txt" type="text" maxlength="500" placeholder="Ketik pesan…" autocomplete="off">
+          <button type="button" class="ib" id="mic">🎤</button>
+          <button class="send" type="submit">➤</button>
+        </form>
+      </div>
+    </div>
+    <nav id="nav">
+      <button data-t="chats" class="on"><span><svg viewBox="0 0 24 24"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H6l-3 2 1-4A7.5 7.5 0 1 1 20 11.5Z"/><path d="M8 10h8M8 14h5"/></svg></span>Chat</button>
+      <button data-t="status"><span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="5.2"/></svg></span>Status</button>
+      <button data-t="friends"><span><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M2.8 19c.5-3.2 2.7-5 6.2-5s5.7 1.8 6.2 5"/><path d="M16 5.2a3 3 0 0 1 0 5.7M17 14c2.3.4 3.6 2 4 4.5"/></svg></span>Teman</button>
+      <button data-t="me"><span><svg viewBox="0 0 24 24"><circle cx="12" cy="7.5" r="3.5"/><path d="M4.5 21c.4-4.7 3-7 7.5-7s7.1 2.3 7.5 7Z"/></svg></span>Profil</button>
+    </nav>
+  </section>
+  <div id="sv" class="hide"></div>
+  <div id="publicProfile" aria-modal="true" role="dialog"></div>
+  <div id="avatarZoom" role="dialog" aria-modal="true"><button class="zoom-close" type="button" aria-label="Tutup">×</button><img alt="Foto profil ukuran besar"></div>
+  <div id="toast"></div>
+  <button id="jumpLatest" class="hide" type="button" aria-label="Ke pesan terbaru" title="Ke pesan terbaru">
+    <svg viewBox="0 0 24 24"><path d="m5 8 7 7 7-7M5 14l7 7 7-7"/></svg>
+  </button>
+  <div id="messageActions" class="hide" role="dialog" aria-modal="true" aria-label="Aksi pesan">
+    <div class="action-sheet">
+      <div class="action-title" id="messageActionTitle">Aksi pesan</div>
+      <button type="button" id="actionReply">↩ Balas pesan</button>
+      <button type="button" id="actionDeleteMe">Hapus untuk saya</button>
+      <button type="button" id="actionDeleteAll" class="danger">Hapus untuk semua orang</button>
+      <button type="button" id="actionCancel" class="cancel">Batal</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+// ===== Supabase (jangan diganti) =====
+var SUPABASE_URL = "https://aqurgyiimjgyqxoqnhto.supabase.co";
+var SUPABASE_KEY = "sb_publishable_XLGOqtX1F7ZoD6AYEebvXg_8KGLegIO";
+// =====================================
+
+function showErr(m){var b=document.getElementById("boot");b.classList.remove("hide");b.textContent="";var t=document.createElement("div");t.textContent=m;var x=document.createElement("button");x.className="btn s";x.textContent="Muat ulang";x.onclick=function(){location.reload()};b.appendChild(t);b.appendChild(x)}
+window.addEventListener("error",function(e){showErr("Terjadi error: "+e.message)});
+
+function startApp(){
+var ROOMS=[["Umum","🏫"]];
+var COLORS=["#6a5cff","#ff6b8b","#18b57e","#f59e0b","#0ea5e9","#a855f7","#ef4444","#14b8a6"];
+var sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+var me=null,prof=null,P={},F=[],cur=null,msgs=[],tab="chats",mr=null,chunks=[],TT=null,ST=null,replyTo=null;
+var actionMessage=null,forceBottom=true,hiddenMessageIds=new Set(),statusGroups=[];
+var $=function(i){return document.getElementById(i)};
+function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+function color(s){var h=0;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return COLORS[h%COLORS.length]}
+function av(p,sz){sz=sz||44;var d=el("div","av");d.style.width=d.style.height=sz+"px";d.style.fontSize=(sz*.42)+"px";var n=(p&&(p.display_name||p.username||p.name))||"?";
+  if(p&&p.avatar_url){var i=document.createElement("img");i.src=p.avatar_url;d.appendChild(i)}else{d.style.background=color(n);d.textContent=n.charAt(0)}return d}
+function toast(t){var x=$("toast");x.textContent=t;x.classList.add("on");clearTimeout(TT);TT=setTimeout(function(){x.classList.remove("on")},3200)}
+function hm(ts){return new Date(ts).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})}
+function dl(ts){var d=new Date(ts);return d.toDateString()===new Date().toDateString()?"Hari ini":d.toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long"})}
+function pn(id){var p=P[id];return p?(p.display_name||p.username):"Pengguna"}
+function dm(o){return "dm:"+[me.id,o].sort().join("_")}
+function li(a,t,s,fn){var r=el("div","li");r.appendChild(a);var x=el("div","t");x.appendChild(el("b","",t));if(s)x.appendChild(el("small","",s));r.appendChild(x);if(fn)r.onclick=fn;return r}
+
+/* ---------- AUTH: USERNAME + PASSWORD ---------- */
+var authMode="login";
+// Supabase Auth mewajibkan identitas berformat email. Pengguna TIDAK diminta
+// memasukkan email; alamat placeholder unik ini dibuat otomatis dan tidak untuk menerima email.
+function syntheticEmail(){return "u"+crypto.randomUUID().replace(/-/g,"")+"@example.com"}
+function setAuthMode(mode){
+  authMode=mode;var reg=mode==="register";
+  $("register-fields").classList.toggle("hide",!reg);
+  $("confirm-wrap").classList.toggle("hide",!reg);
+  $("go").textContent=reg?"Daftar akun":"Masuk";
+  $("auth-switch").textContent=reg?"Sudah punya akun? Masuk":"Belum punya akun? Daftar";
+  $("auth-subtitle").textContent=reg?"Buat akun UChatt sekali saja, lalu gunakan kembali kapan pun.":"Masuk dengan username dan password akun UChatt-mu.";
+  $("pw").autocomplete=reg?"new-password":"current-password";
+  $("aerr").textContent="";
+}
+$("auth-switch").onclick=function(){setAuthMode(authMode==="login"?"register":"login")};
+$("go").onclick=async function(){
+  var u=$("un").value.trim().replace(/^@+/,"").toLowerCase(),password=$("pw").value,er=$("aerr");er.textContent="";
+  if(!/^[a-z0-9_]{3,20}$/.test(u)){er.textContent="Username 3–20 karakter: huruf kecil, angka, atau _.";return}
+  if(password.length<8){er.textContent="Password minimal 8 karakter.";return}
+  $("go").disabled=true;$("go").textContent=authMode==="register"?"Membuat akun…":"Memeriksa akun…";
+  try{
+    if(authMode==="register"){
+      var display=$("dn").value.trim()||u;
+      if($("pw2").value!==password){er.textContent="Konfirmasi password belum sama.";return}
+      var exists=await sb.from("profiles").select("id").eq("username",u).maybeSingle();
+      if(exists.data){er.textContent="Username sudah digunakan. Pilih username lain.";return}
+      if(exists.error){er.textContent="Tidak bisa memeriksa username: "+exists.error.message;return}
+      // Email internal acak dipakai sebagai identitas Supabase Auth; pengguna cukup mengingat username.
+      var email=syntheticEmail();
+      var a=await sb.auth.signUp({email:email,password:password,options:{data:{username:u,display_name:display}}});
+      if(a.error){er.textContent=a.error.message;return}
+      if(!a.data.session||!a.data.user){er.textContent="Akun dibuat, tetapi Supabase meminta verifikasi email. Untuk mode username/password tanpa email, matikan Confirm email di Authentication → Providers → Email, lalu daftar ulang dengan username yang belum terpakai.";return}
+      me=a.data.user;
+      var pr=await sb.from("profiles").upsert({id:me.id,username:u,display_name:display},{onConflict:"id"}).select().single();
+      if(pr.error){er.textContent="Akun Auth sudah dibuat, tetapi profil gagal disimpan: "+pr.error.message+". Jangan daftar ulang; coba masuk lagi setelah memperbaiki tabel profiles.";return}
+      prof=pr.data;prof.bio=(me.user_metadata&&me.user_metadata.bio)||"";await enter();
+    }else{
+      var lookup=await sb.rpc("uchatt_login_email",{p_username:u});
+      if(lookup.error){er.textContent="Fungsi login username belum dipasang. Jalankan SQL tambahan UChatt terlebih dahulu.";return}
+      var email=lookup.data;
+      if(!email){er.textContent="Username belum terdaftar. Silakan daftar akun terlebih dahulu.";return}
+      var a=await sb.auth.signInWithPassword({email:email,password:password});
+      if(a.error){er.textContent="Username atau password salah.";return}
+      me=a.data.user;
+      var pr=await sb.from("profiles").select("*").eq("id",me.id).maybeSingle();
+      if(pr.error||!pr.data){er.textContent="Profil akun tidak ditemukan. Hubungi admin UChatt.";return}
+      prof=pr.data;prof.bio=(me.user_metadata&&me.user_metadata.bio)||prof.bio||"";await enter();
+    }
+  }catch(e){er.textContent="Terjadi kesalahan: "+e.message}
+  finally{$("go").disabled=false;$ ("go").textContent=authMode==="register"?"Daftar akun":"Masuk"}
+};
+(async function(){
+  try{var s=await sb.auth.getSession();
+    if(s.data.session&&!s.data.session.user.is_anonymous){me=s.data.session.user;var r=await sb.from("profiles").select("*").eq("id",me.id).maybeSingle();if(r.data){prof=r.data;prof.bio=(me.user_metadata&&me.user_metadata.bio)||prof.bio||"";await enter();return}}
+    if(s.data.session&&s.data.session.user.is_anonymous){await sb.auth.signOut()}
+  }catch(e){showErr("Gagal memuat: "+e.message);return}
+  $("boot").classList.add("hide");$("auth").classList.remove("hide");setAuthMode("login");
+})();
+
+async function loadP(){var r=await sb.from("profiles").select("*");P={};(r.data||[]).forEach(function(p){P[p.id]=p})}
+async function loadF(){var r=await sb.from("friends").select("*");F=r.data||[]}
+function friends(){return F.filter(function(f){return f.status==="accepted"}).map(function(f){return f.a===me.id?f.b:f.a})}
+
+function closePublicProfile(){$("publicProfile").classList.remove("open");$("publicProfile").innerHTML=""}
+function showAvatarZoom(url){
+  if(!url)return;
+  var z=$("avatarZoom");z.querySelector("img").src=url;z.classList.add("open");
+}
+$("avatarZoom").querySelector(".zoom-close").onclick=function(){$("avatarZoom").classList.remove("open")};
+$("avatarZoom").onclick=function(e){if(e.target===$("avatarZoom"))$("avatarZoom").classList.remove("open")};
+function openPublicProfile(uid){
+  if(!uid||uid===me.id){go("me");return}
+  var p=P[uid];
+  if(!p){toast("Profil pengguna belum tersedia");return}
+  var root=$("publicProfile");root.innerHTML="";
+  var head=el("div","public-head"),back=el("button","public-back","‹");back.onclick=closePublicProfile;
+  head.appendChild(back);head.appendChild(el("b","","Profil"));root.appendChild(head);
+  var wrap=el("div","public-wrap"),top=el("div","public-top"),avatar=el("div","public-avatar");
+  avatar.appendChild(av(p,100));avatar.onclick=function(){if(p.avatar_url)showAvatarZoom(p.avatar_url)};
+  top.appendChild(avatar);
+  var stats=el("div","public-stats");
+  [["0","postingan"],["0","teman"]].forEach(function(x){var s=el("div");s.appendChild(el("strong","",x[0]));s.appendChild(el("span","",x[1]));stats.appendChild(s)});
+  top.appendChild(stats);wrap.appendChild(top);
+  wrap.appendChild(el("div","public-name",p.display_name||p.username||"Pengguna"));
+  wrap.appendChild(el("div","public-handle","@"+(p.username||"user")));
+  wrap.appendChild(el("div","public-bio",p.bio||"Belum ada bio."));
+  // Nomor telepon hanya ditampilkan jika pengguna mengisinya dan memilih untuk membagikannya.
+  if(p.phone&&p.phone_visible===true){
+    var phone=el("div","public-phone");phone.appendChild(el("span","","☎"));phone.appendChild(el("span","",p.phone));wrap.appendChild(phone);
+  }
+  var actions=el("div","public-actions");
+  var message=el("button","primary","Kirim pesan");message.onclick=function(){closePublicProfile();openConv(dm(uid),pn(uid),av(p,36))};
+  var friend=el("button","","");var relation=F.find(function(f){return (f.a===me.id&&f.b===uid)||(f.a===uid&&f.b===me.id)});
+  if(relation&&relation.status==="accepted"){friend.textContent="✓ Berteman";friend.disabled=true}
+  else if(relation&&relation.status==="pending"){friend.textContent=relation.a===me.id?"Menunggu":"Terima permintaan";friend.onclick=async function(){
+    var result=await sb.from("friends").update({status:"accepted"}).eq("id",relation.id);
+    if(result.error){toast(result.error.message);return}await loadF();closePublicProfile();openPublicProfile(uid)}}
+  else{friend.textContent="＋ Tambah teman";friend.onclick=async function(){
+    var result=await sb.from("friends").insert({a:me.id,b:uid,status:"pending"});
+    if(result.error){toast("Tidak dapat mengirim permintaan: "+result.error.message);return}
+    await loadF();toast("Permintaan pertemanan dikirim");closePublicProfile();openPublicProfile(uid)}}
+  actions.appendChild(message);actions.appendChild(friend);wrap.appendChild(actions);
+  wrap.appendChild(el("div","public-content-empty","▦"));
+  var empty=wrap.lastChild;empty.appendChild(el("b","","Postingan pengguna"));empty.appendChild(el("span","","Postingan publik akan ditampilkan di sini."));
+  root.appendChild(wrap);root.classList.add("open");
+}
+
+async function enter(){
+  $("boot").classList.add("hide");$("auth").classList.add("hide");$("main").classList.remove("hide");
+  await Promise.all([loadP(),loadF()]);P[me.id]=prof;
+  sb.channel("rt").on("postgres_changes",{event:"INSERT",schema:"public",table:"messages"},function(p){
+    var m=p.new;if(m.room===cur&&!hiddenMessageIds.has(String(m.id))&&!msgs.some(function(x){return x.id===m.id})){
+      var box=$("msgs"),near=box.scrollHeight-box.scrollTop-box.clientHeight<110;
+      msgs.push(m);forceBottom=near;drawMsgs();
+    }
+  }).on("postgres_changes",{event:"DELETE",schema:"public",table:"messages"},function(p){
+    var gone=p.old;if(cur&&gone&&msgs.some(function(x){return String(x.id)===String(gone.id)})){
+      msgs=msgs.filter(function(x){return String(x.id)!==String(gone.id)});drawMsgs();
+    }
+  }).subscribe();
+  setInterval(async function(){if(tab==="chats"&&!cur){await loadF();drawChats()}if(tab==="friends"){await loadF();drawFList()}},12000);
+  go("chats");
+}
+
+/* ---------- NAV ---------- */
+var TITLES={chats:"UChatt",status:"Status",friends:"Teman",me:"Profil"};
+function go(t){
+  tab=t;cur=null;$("jumpLatest").classList.remove("visible");$("jumpLatest").classList.add("hide");
+  ["chats","status","friends","me","conv"].forEach(function(k){$("v"+k).classList.toggle("hide",k!==t)});
+  document.querySelectorAll("nav button").forEach(function(b){b.classList.toggle("on",b.dataset.t===t)});
+  $("nav").classList.remove("hide");$("bk").classList.add("hide");$("hav").classList.add("hide");$("ttl").textContent=TITLES[t];
+  if(t==="chats")drawChats();if(t==="status")drawStatus();if(t==="friends")drawFriends();if(t==="me")drawMe();
+}
+document.querySelectorAll("nav button").forEach(function(b){b.onclick=function(){go(b.dataset.t)}});
+$("bk").onclick=function(){closePublicProfile();go("chats")};
+
+/* ---------- CHATS ---------- */
+function drawChats(){
+  var v=$("vchats");v.innerHTML="";v.appendChild(el("div","sec","Grup kampus"));
+  ROOMS.forEach(function(r){var a=el("div","av",r[1]);a.style.cssText="width:46px;height:46px;font-size:22px;background:var(--chip)";
+    v.appendChild(li(a,r[0],"Grup terbuka untuk semua",function(){openConv(r[0],r[0],a.cloneNode(true))}))});
+  var fr=friends();v.appendChild(el("div","sec","Chat pribadi"));
+  if(!fr.length){v.appendChild(el("div","pad",'Belum ada teman. Buka tab Teman untuk menambah lewat username.')).style.color="var(--muted)"}
+  fr.forEach(function(id){var row=li(av(P[id],46),pn(id),"@"+((P[id]||{}).username||""),function(){openConv(dm(id),pn(id),av(P[id],36))});row.firstChild.classList.add("chat-profile-trigger");row.firstChild.onclick=function(e){e.stopPropagation();openPublicProfile(id)};row.querySelector(".t").classList.add("chat-profile-trigger");row.querySelector(".t").onclick=function(e){e.stopPropagation();openPublicProfile(id)};v.appendChild(row)});
+}
+async function openConv(room,title,avEl){
+  cur=room;msgs=[];
+  ["chats","status","friends","me"].forEach(function(k){$("v"+k).classList.add("hide")});
+  $("vconv").classList.remove("hide");$("nav").classList.add("hide");$("bk").classList.remove("hide");
+  var h=$("hav");h.innerHTML="";h.appendChild(avEl);h.classList.remove("hide");
+  var isDirect=room.indexOf("dm:")===0;
+  if(isDirect){var peer=room.slice(3).split("_").filter(function(x){return x!==me.id})[0];h.classList.add("chat-profile-trigger");h.onclick=function(){openPublicProfile(peer)}}
+  else{h.classList.remove("chat-profile-trigger");h.onclick=null}
+  $("ttl").textContent=title;
+  $("msgs").innerHTML="";hiddenMessageIds=new Set();forceBottom=true;
+  var h=await sb.from("message_hidden").select("message_id").eq("user_id",me.id);
+  if(!h.error)(h.data||[]).forEach(function(x){hiddenMessageIds.add(String(x.message_id))});
+  var r=await sb.from("messages").select("*").eq("room",room).order("created_at",{ascending:false}).limit(120);
+  if(r.error){toast("Gagal memuat: "+r.error.message);return}
+  if(cur!==room)return;msgs=r.data.reverse().filter(function(m){return !hiddenMessageIds.has(String(m.id))});drawMsgs();
+}
+function body(m){
+  var k=m.kind||"text",w=el("div"),raw=m.text||"",match=raw.match(/^\[\[UCHATT_REPLY\|([^|]*)\|([^\]]*)\]\]\n?/);
+  if(match){
+    var q=el("div","reply-quote");
+    var qn="Pesan";var qt="";
+    try{qn=decodeURIComponent(match[1]);qt=decodeURIComponent(match[2])}catch(e){}
+    q.appendChild(el("b","", "↪ "+qn));
+    q.appendChild(el("span","",qt));
+    w.appendChild(q);
+    raw=raw.slice(match[0].length);
+  }
+  if(k==="image"){var i=document.createElement("img");i.src=m.url;i.className="mi";i.onclick=function(){window.open(m.url,"_blank")};w.appendChild(i)}
+  else if(k==="video"){var v=document.createElement("video");v.src=m.url;v.controls=true;v.preload="metadata";v.className="mi";w.appendChild(v)}
+  else if(k==="audio"){var a=document.createElement("audio");a.src=m.url;a.controls=true;a.className="au";w.appendChild(a)}
+  else if(k==="location"){var l=el("a","loc","📍 Lokasi dibagikan · Buka di peta");l.href="https://www.openstreetmap.org/?mlat="+m.lat+"&mlon="+m.lng+"#map=16/"+m.lat+"/"+m.lng;l.target="_blank";l.rel="noopener";w.appendChild(l)}
+  if(raw)w.appendChild(el("span","",raw));
+  return w;
+}
+function setReply(m){
+  replyTo=m;
+  var raw=(m.text||"").replace(/^\[\[UCHATT_REPLY\|([^|]*)\|([^\]]*)\]\]\n?/,"");
+  var label=m.uid===me.id?"Pesan kamu":(P[m.uid]?pn(m.uid):(m.name||"Pengguna"));
+  $("replytext").textContent=label+": "+(raw||((m.kind==="image")?"Foto":m.kind==="video"?"Video":m.kind==="audio"?"Pesan suara":"Lampiran")).slice(0,100);
+  $("replybar").classList.remove("hide");
+  $("txt").focus();
+}
+$("replycancel").onclick=function(){replyTo=null;$("replybar").classList.add("hide")};
+
+function drawMsgs(){
+  var box=$("msgs");
+  var nearBottom=(box.scrollHeight-box.scrollTop-box.clientHeight)<110;
+  var shouldStick=forceBottom||nearBottom;
+  msgs=msgs.filter(function(m){return !hiddenMessageIds.has(String(m.id))});
+  box.innerHTML="";var isdm=cur&&cur.indexOf("dm:")===0;
+  if(!msgs.length){var e=el("div","day","Belum ada pesan. Sapa duluan! 👋");e.style.margin="auto";box.appendChild(e);updateJumpButton();forceBottom=false;return}
+  var ld="",lu="",lt=0;
+  msgs.forEach(function(m){
+    var t=new Date(m.created_at).getTime(),d=dl(t);
+    if(d!==ld){box.appendChild(el("div","day",d));ld=d;lu=""}
+    var mine=m.uid===me.id,gr=(m.uid===lu&&t-lt<300000);
+    var r=el("div","r"+(mine?" me":"")+(gr?"":" gap"));
+    if(!mine&&!isdm){if(gr)r.appendChild(el("div","sp"));else{var senderAv=av(P[m.uid]||{name:m.name},28);senderAv.classList.add("chat-profile-trigger");senderAv.onclick=function(e){e.stopPropagation();openPublicProfile(m.uid)};r.appendChild(senderAv)}}
+    var b=el("div","bub");
+    if(!mine&&!isdm&&!gr){var n=el("div","nm",P[m.uid]?pn(m.uid):m.name);n.style.color=color(m.name);n.classList.add("chat-profile-trigger");n.onclick=function(e){e.stopPropagation();openPublicProfile(m.uid)};b.appendChild(n)}
+    b.appendChild(body(m));b.appendChild(el("span","tm",hm(t)));r.appendChild(b);
+    var sx=0,sy=0,lastDx=0,axis=null,hint=el("span","swipe-reply-hint","↪");
+    r.appendChild(hint);
+    r.addEventListener("touchstart",function(e){
+      if(e.touches.length!==1)return;
+      sx=e.touches[0].clientX;sy=e.touches[0].clientY;lastDx=0;axis=null;
+      r.classList.add("swiping");
+    },{passive:true});
+    r.addEventListener("touchmove",function(e){
+      if(!sx||e.touches.length!==1)return;
+      var dx=e.touches[0].clientX-sx,dy=e.touches[0].clientY-sy;
+      if(axis===null&&Math.max(Math.abs(dx),Math.abs(dy))>7)axis=Math.abs(dx)>Math.abs(dy)?"x":"y";
+      if(axis!=="x")return;
+      // Only swipe right to reply, with resistance for a natural WhatsApp-like feel.
+      if(dx>0){lastDx=Math.min(dx,112);r.style.transform="translateX("+(lastDx*.72)+"px)";var progress=Math.min(lastDx/65,1);hint.style.opacity=String(progress);hint.style.transform="scale("+(.72+progress*.28)+")";}
+      else{lastDx=0;r.style.transform="translateX(0px)";hint.style.opacity="0";}
+    },{passive:true});
+    r.addEventListener("touchend",function(e){
+      if(!sx)return;
+      var dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
+      r.classList.remove("swiping");
+      if(axis==="x"&&dx>62&&Math.abs(dy)<70){setReply(m);r.style.transform="translateX(0px)";}
+      else{r.style.transform="translateX(0px)";}
+      hint.style.opacity="0";hint.style.transform="scale(.72)";sx=0;sy=0;lastDx=0;axis=null;
+    },{passive:true});
+    r.addEventListener("touchcancel",function(){r.classList.remove("swiping");r.style.transform="translateX(0px)";hint.style.opacity="0";sx=0;sy=0;axis=null;},{passive:true});
+    r.addEventListener("contextmenu",function(e){e.preventDefault();openMessageActions(m)});
+    box.appendChild(r);lu=m.uid;lt=t;
+  });
+  if(shouldStick){box.scrollTop=box.scrollHeight}
+  forceBottom=false;
+  updateJumpButton();
+}
+
+function updateJumpButton(){
+  var box=$("msgs"),btn=$("jumpLatest");
+  if(!box||$("vconv").classList.contains("hide")){btn.classList.remove("visible");btn.classList.add("hide");return}
+  var away=box.scrollHeight-box.scrollTop-box.clientHeight>140;
+  btn.classList.toggle("hide",!away);
+  btn.classList.toggle("visible",away);
+}
+$("msgs").addEventListener("scroll",updateJumpButton,{passive:true});
+$("jumpLatest").onclick=function(){
+  var box=$("msgs");box.scrollTo({top:box.scrollHeight,behavior:"smooth"});
+  setTimeout(updateJumpButton,260);
+};
+function openMessageActions(m){
+  actionMessage=m;
+  var mine=m.uid===me.id;
+  $("messageActionTitle").textContent=mine?"Pesan kamu":"Pesan dari "+(P[m.uid]?pn(m.uid):(m.name||"pengguna"));
+  $("actionDeleteAll").classList.toggle("hide",!mine);
+  $("messageActions").classList.remove("hide");
+}
+function closeMessageActions(){actionMessage=null;$("messageActions").classList.add("hide")}
+$("actionCancel").onclick=closeMessageActions;
+$("messageActions").addEventListener("click",function(e){if(e.target===$("messageActions"))closeMessageActions()});
+$("actionReply").onclick=function(){if(actionMessage)setReply(actionMessage);closeMessageActions()};
+$("actionDeleteMe").onclick=async function(){
+  var m=actionMessage;if(!m)return;
+  closeMessageActions();
+  var row={message_id:String(m.id),user_id:me.id};
+  var r=await sb.from("message_hidden").upsert(row,{onConflict:"message_id,user_id"});
+  if(r.error){toast("Gagal menghapus untuk kamu: "+r.error.message+" · Jalankan SQL tambahan UChatt terlebih dahulu.");return}
+  hiddenMessageIds.add(String(m.id));msgs=msgs.filter(function(x){return String(x.id)!==String(m.id)});drawMsgs();toast("Pesan dihapus untuk kamu");
+};
+$("actionDeleteAll").onclick=async function(){
+  var m=actionMessage;if(!m)return;
+  if(m.uid!==me.id){toast("Kamu hanya bisa menghapus pesan milikmu untuk semua orang");closeMessageActions();return}
+  closeMessageActions();
+  if(!confirm("Hapus pesan ini untuk semua orang?"))return;
+  var r=await sb.from("messages").delete().eq("id",m.id).eq("uid",me.id).select("id");
+  if(r.error){toast("Gagal menghapus untuk semua orang: "+r.error.message);return}
+  if(!r.data||!r.data.length){toast("Pesan tidak terhapus. Periksa izin DELETE (RLS) tabel messages.");return}
+  msgs=msgs.filter(function(x){return String(x.id)!==String(m.id)});drawMsgs();toast("Pesan dihapus untuk semua orang");
+};
+
+async function send(o){
+  if(!cur)return false;
+  var m=Object.assign({room:cur,name:prof.display_name||prof.username,uid:me.id,text:""},o);
+  var r=await sb.from("messages").insert(m).select().single();
+  if(r.error){toast("Gagal kirim: "+r.error.message);return false}
+  if(!msgs.some(function(x){return x.id===r.data.id})){msgs.push(r.data);drawMsgs()}
+  return true;
+}
+async function up(file){
+  var ext=(file.name.split(".").pop()||"bin").toLowerCase();
+  var path=me.id+"/"+Date.now()+"-"+Math.random().toString(36).slice(2,7)+"."+ext;
+  var r=await sb.storage.from("media").upload(path,file,{contentType:file.type});
+  if(r.error){toast("Unggah gagal: "+r.error.message);return null}
+  return sb.storage.from("media").getPublicUrl(path).data.publicUrl;
+}
+$("f").onsubmit=function(e){e.preventDefault();var v=$("txt").value.trim();if(!v)return;$("txt").value="";
+  if(replyTo){var who=replyTo.uid===me.id?"Kamu":(P[replyTo.uid]?pn(replyTo.uid):(replyTo.name||"Pengguna"));var q=(replyTo.text||"").replace(/^\[\[UCHATT_REPLY\|([^|]*)\|([^\]]*)\]\]\n?/,"")||((replyTo.kind==="image")?"Foto":replyTo.kind==="video"?"Video":"Lampiran");v="[[UCHATT_REPLY|"+encodeURIComponent(who)+"|"+encodeURIComponent(q.slice(0,100))+"]]\n"+v;replyTo=null;$("replybar").classList.add("hide")}
+  send({text:v})};
+$("fi").onchange=async function(){
+  var f=this.files[0];this.value="";if(!f)return;
+  if(f.size>40*1048576){toast("File maksimal 40 MB");return}
+  toast("Mengunggah…");var u=await up(f);if(u)send({kind:f.type.indexOf("video")===0?"video":"image",url:u});
+};
+$("loc").onclick=function(){
+  if(!navigator.geolocation){toast("Lokasi tidak didukung di perangkat ini");return}
+  toast("Mengambil lokasi…");
+  navigator.geolocation.getCurrentPosition(function(p){send({kind:"location",lat:p.coords.latitude,lng:p.coords.longitude})},function(){toast("Izin lokasi ditolak")},{enableHighAccuracy:true,timeout:15000});
+};
+$("mic").onclick=async function(){
+  if(mr&&mr.state==="recording"){mr.stop();return}
+  var st;try{st=await navigator.mediaDevices.getUserMedia({audio:true})}catch(e){toast("Izin mikrofon ditolak");return}
+  chunks=[];mr=new MediaRecorder(st);
+  mr.ondataavailable=function(e){chunks.push(e.data)};
+  mr.onstop=async function(){
+    st.getTracks().forEach(function(t){t.stop()});$("rec").classList.add("hide");$("mic").classList.remove("red");
+    var type=(mr.mimeType||"audio/webm").split(";")[0],blob=new Blob(chunks,{type:type});
+    if(blob.size<1000)return;toast("Mengirim voice note…");
+    var u=await up(new File([blob],"vn."+(type.indexOf("mp4")>-1?"m4a":"webm"),{type:type}));if(u)send({kind:"audio",url:u});
+  };
+  mr.start();$("rec").classList.remove("hide");$("mic").classList.add("red");
+};
+
+/* ---------- STATUS ---------- */
+async function drawStatus(){
+  var v=$("vstatus");v.innerHTML="";
+  var r=await sb.from("statuses").select("*").gt("created_at",new Date(Date.now()-864e5).toISOString()).order("created_at",{ascending:true});
+  if(tab!=="status")return;
+  var by={};(r.data||[]).forEach(function(st){(by[st.uid]=by[st.uid]||[]).push(st)});
+  var mine=by[me.id]||[];
+  var groupIds=Object.keys(by).filter(function(id){return id===me.id||id!==me.id});
+  groupIds.sort(function(a,b){if(a===me.id)return -1;if(b===me.id)return 1;return 0});
+  statusGroups=groupIds.map(function(id){return {uid:id,list:by[id]||[]}}).filter(function(g){return g.list.length});
+  var page=el("div","friends-page");
+  page.appendChild(el("div","sec","CERITA TERBARU"));
+  var mineRow=li(av(prof,52),"Status saya",mine.length?mine.length+" status · ketuk untuk melihat":"Bagikan foto, video, atau teks (hilang 24 jam)",mine.length?function(){showS(mine,me.id)}:null);
+  page.appendChild(mineRow);
+  var upload=el("div","fs");
+  var lb=el("label","btn s","📷 Foto/Video");lb.htmlFor="sfi";lb.style.textAlign="center";
+  var tb=el("button","btn s","✏️ Teks");tb.onclick=async function(){
+    var t=prompt("Tulis statusmu:");if(!t||!t.trim())return;
+    var x=await sb.from("statuses").insert({uid:me.id,kind:"text",text:t.trim().slice(0,200)});
+    if(x.error)toast(x.error.message);else{toast("Status dibagikan");drawStatus()}};
+  upload.appendChild(lb);upload.appendChild(tb);page.appendChild(upload);
+  var fi=document.createElement("input");fi.type="file";fi.id="sfi";fi.accept="image/*,video/*";fi.hidden=true;
+  fi.onchange=async function(){var f=fi.files[0];if(!f)return;if(f.size>40*1048576){toast("File maksimal 40 MB");return}
+    toast("Mengunggah…");var u=await up(f);if(!u)return;
+    var x=await sb.from("statuses").insert({uid:me.id,kind:f.type.indexOf("video")===0?"video":"image",url:u});
+    if(x.error)toast(x.error.message);else{toast("Status dibagikan");drawStatus()}};
+  page.appendChild(fi);
+  page.appendChild(el("div","friends-section-title","Status teman"));
+  var ids=Object.keys(by).filter(function(id){return id!==me.id});
+  if(!ids.length){
+    var empty=el("div","friend-empty");empty.appendChild(el("div","symbol","◉"));empty.appendChild(el("b","","Belum ada status baru"));
+    empty.appendChild(el("p","","Status temanmu akan muncul di sini. Ketuk foto profil teman untuk mulai melihat ceritanya."));
+    page.appendChild(empty);
+  }
+  ids.forEach(function(id){
+    var list=by[id],a=el("div","ring");a.appendChild(av(P[id],48));
+    page.appendChild(li(a,pn(id),list.length+" status · "+hm(list[list.length-1].created_at),function(){showS(list,id)}));
+  });
+  v.appendChild(page);
+}
+function showS(list,uid){
+  var groups=statusGroups.length?statusGroups:[{uid:uid,list:list}],groupIndex=groups.findIndex(function(g){return g.uid===uid});
+  if(groupIndex<0){groups=[{uid:uid,list:list}];groupIndex=0}
+  var index=0,sv=$("sv"),timer=null,started=0,duration=5500,paused=false,progressFrame=null,replyOpen=false,currentVideo=null,remaining=duration;
+  sv.classList.remove("hide");sv.classList.remove("reply-open");
+  function clearPlayback(){
+    clearTimeout(timer);timer=null;
+    if(progressFrame){cancelAnimationFrame(progressFrame);progressFrame=null}
+    if(currentVideo){currentVideo.pause();currentVideo=null}
+  }
+  function cleanup(){
+    clearPlayback();sv.classList.add("hide");sv.classList.remove("reply-open");sv.innerHTML="";
+    document.removeEventListener("visibilitychange",visibilityPause);
+  }
+  function currentGroup(){return groups[groupIndex]}
+  function currentStory(){var g=currentGroup();return g&&g.list[index]}
+  function visibilityPause(){if(document.hidden)pause();else resume()}
+  function pause(){
+    if(paused||replyOpen)return;paused=true;
+    if(timer){clearTimeout(timer);timer=null}
+    if(currentVideo)currentVideo.pause();
+    if(progressFrame){cancelAnimationFrame(progressFrame);progressFrame=null}
+    if(!currentVideo)remaining=Math.max(0,duration-(Date.now()-started));
+  }
+  function resume(){
+    if(!paused||replyOpen)return;paused=false;
+    if(currentVideo){currentVideo.play().catch(function(){});return}
+    started=Date.now()-(duration-remaining);animate();
+  }
+  function animate(){
+    if(paused||replyOpen)return;
+    var elapsed=Date.now()-started,ratio=Math.min(1,elapsed/duration);
+    remaining=Math.max(0,duration-elapsed);
+    var fill=sv.querySelector(".story-segment.active i");if(fill)fill.style.width=(ratio*100)+"%";
+    if(ratio>=1){next();return}
+    progressFrame=requestAnimationFrame(animate);
+  }
+  function openReply(){
+    replyOpen=true;pause();sv.classList.add("reply-open");
+    var input=sv.querySelector("#storyReplyInput");if(input)setTimeout(function(){input.focus()},100);
+  }
+  function closeReply(){replyOpen=false;sv.classList.remove("reply-open");if(paused)resume()}
+  async function sendReply(){
+    var input=sv.querySelector("#storyReplyInput"),value=input&&input.value.trim();if(!value)return;
+    var st=currentStory(),g=currentGroup();
+    var result=await sb.from("status_replies").insert({status_id:st.id,uid:me.id,text:value.slice(0,500)});
+    if(result.error){toast("Balasan belum terkirim: "+result.error.message);return}
+    input.value="";toast("Balasan status terkirim");closeReply();
+  }
+  function render(){
+    clearPlayback();
+    var g=currentGroup();
+    if(!g){cleanup();return}
+    if(index>=g.list.length){
+      groupIndex++;index=0;
+      if(!currentGroup()){cleanup();return}
+      g=currentGroup();
+    }
+    if(index<0){
+      if(groupIndex>0){groupIndex--;index=groups[groupIndex].list.length-1}
+      else{index=0}
+      g=currentGroup();
+    }
+    var st=currentStory();if(!st){cleanup();return}
+    sv.innerHTML="";sv.classList.remove("reply-open");replyOpen=false;paused=false;
+    var media;
+    if(st.kind==="image"){media=document.createElement("img");media.className="story-media";media.src=st.url;sv.appendChild(media);duration=5500}
+    else if(st.kind==="video"){
+      media=document.createElement("video");media.className="story-media";media.src=st.url;media.autoplay=true;media.playsInline=true;media.muted=false;sv.appendChild(media);currentVideo=media;duration=15000;
+      media.onloadedmetadata=function(){if(isFinite(media.duration)&&media.duration>0){duration=Math.max(3000,media.duration*1000);remaining=duration;started=Date.now()}};
+      media.onended=function(){next()};
+      media.play().catch(function(){});
+    }else{media=el("div","story-text",st.text||"");sv.appendChild(media);duration=6500}
+    var top=el("div","story-top"),bars=el("div","story-bars");
+    g.list.forEach(function(_,n){var seg=el("div","story-segment");var fill=document.createElement("i");if(n<index)fill.style.width="100%";if(n===index)seg.classList.add("active");seg.appendChild(fill);bars.appendChild(seg)});
+    top.appendChild(bars);
+    var meta=el("div","story-meta");meta.appendChild(av(P[g.uid],34));
+    var name=el("div");name.appendChild(el("strong","",pn(g.uid)));name.appendChild(el("small","",hm(st.created_at)));
+    meta.appendChild(name);var close=el("button","story-close","×");close.onclick=function(e){e.stopPropagation();cleanup()};meta.appendChild(close);top.appendChild(meta);sv.appendChild(top);
+    var left=el("div","story-zone left"),right=el("div","story-zone right");
+    left.onclick=function(e){e.stopPropagation();previous()};right.onclick=function(e){e.stopPropagation();next()};
+    sv.appendChild(left);sv.appendChild(right);
+    sv.appendChild(el("div","story-reply-hint","Geser ke atas untuk membalas"));
+    var panel=el("div","story-reply-panel"),caption=el("div","story-reply-caption","Balas cerita "+pn(g.uid));
+    var row=el("div","story-reply-row"),input=document.createElement("input");input.id="storyReplyInput";input.placeholder="Kirim balasan…";input.autocomplete="off";
+    var send=el("button","","➤");send.onclick=sendReply;input.addEventListener("keydown",function(e){if(e.key==="Enter")sendReply()});
+    row.appendChild(input);row.appendChild(send);panel.appendChild(caption);panel.appendChild(row);sv.appendChild(panel);
+    remaining=duration;started=Date.now();
+    if(st.kind==="video")progressVideo(media);else animate();
+  }
+  function progressVideo(video){
+    if(paused||replyOpen)return;
+    var fill=sv.querySelector(".story-segment.active i");
+    if(fill&&video.duration&&isFinite(video.duration)){fill.style.width=(Math.min(1,video.currentTime/video.duration)*100)+"%";remaining=Math.max(0,(video.duration-video.currentTime)*1000)}
+    if(!video.ended)progressFrame=requestAnimationFrame(function(){progressVideo(video)});
+  }
+  function next(){index++;if(index>=currentGroup().list.length){groupIndex++;index=0}render()}
+  function previous(){if(index>0)index--;else if(groupIndex>0){groupIndex--;index=groups[groupIndex].list.length-1}render()}
+  function skipUser(){groupIndex++;index=0;if(!currentGroup())cleanup();else render()}
+  // Press and hold pauses playback, like WhatsApp.
+  function holdStart(e){if(e.target.closest(".story-reply-panel,.story-close,.story-zone"))return;pause()}
+  function holdEnd(){if(!replyOpen)resume()}
+  sv.addEventListener("pointerdown",holdStart);
+  sv.addEventListener("pointerup",holdEnd);
+  sv.addEventListener("pointercancel",holdEnd);
+  var touchX=0,touchY=0;
+  sv.addEventListener("touchstart",function(e){if(e.touches.length!==1)return;touchX=e.touches[0].clientX;touchY=e.touches[0].clientY},{passive:true});
+  sv.addEventListener("touchend",function(e){
+    if(!touchX)return;var dx=e.changedTouches[0].clientX-touchX,dy=e.changedTouches[0].clientY-touchY;
+    if(Math.abs(dy)>55&&dy<0)openReply();
+    else if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)){if(dx<0)next();else skipUser()}
+    touchX=0;touchY=0;
+  },{passive:true});
+  sv.onclick=function(e){if(e.target.closest(".story-top,.story-reply-panel"))return};
+  document.addEventListener("visibilitychange",visibilityPause);
+  render();
+}
+
+/* ---------- TEMAN ---------- */
+function drawFriends(){
+  var v=$("vfriends");v.innerHTML="";
+  var page=el("div","friends-page");
+  var hero=el("div","discover-hero");
+  hero.appendChild(el("div","discover-kicker","UCHATT DISCOVER"));
+  hero.appendChild(el("h2","","Siapa yang ingin kamu temukan?"));
+  hero.appendChild(el("p","","Cari teman melalui nama lengkap atau username mereka."));
+  var search=el("div","discover-search");
+  search.innerHTML='<svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg>';
+  var q=document.createElement("input");q.id="fq";q.placeholder="Contoh: nama atau @username…";q.autocapitalize="none";q.autocomplete="off";
+  search.appendChild(q);hero.appendChild(search);hero.appendChild(el("div","discover-foot","✦  Temukan teman, lalu mulai ngobrol."));
+  page.appendChild(hero);
+  var l=el("div");l.id="flist";page.appendChild(l);v.appendChild(page);
+  q.addEventListener("keydown",function(e){if(e.key==="Enter")addF()});
+  var debounce=null;q.addEventListener("input",function(){clearTimeout(debounce);debounce=setTimeout(drawFList,180)});
+  drawFList();
+}
+function drawFList(){
+  var l=$("flist");if(!l)return;l.innerHTML="";
+  var inc=F.filter(function(f){return f.status==="pending"&&f.b===me.id});
+  if(inc.length){
+    l.appendChild(el("div","friends-section-title","Permintaan pertemanan"));
+    inc.forEach(function(f){
+      var r=el("div","friend-card");r.appendChild(av(P[f.a],46));
+      var info=el("div","friend-info");info.appendChild(el("b","",pn(f.a)));info.appendChild(el("small","","@"+((P[f.a]||{}).username||"")));
+      r.appendChild(info);
+      var ok=el("button","friend-chat","Terima");ok.onclick=async function(){var x=await sb.from("friends").update({status:"accepted"}).eq("id",f.id);if(x.error){toast(x.error.message);return}await loadF();drawFList()};
+      var no=el("button","friend-chat","Tolak");no.style.color="#d66b78";no.style.background="#fff0f1";no.onclick=async function(){var x=await sb.from("friends").delete().eq("id",f.id);if(x.error){toast(x.error.message);return}await loadF();drawFList()};
+      r.appendChild(ok);r.appendChild(no);l.appendChild(r);
+    });
+  }
+  var fr=friends(),query=($("fq")&&$("fq").value||"").trim().toLowerCase().replace(/^@/,"");
+  var shown=fr.filter(function(id){var p=P[id]||{};return !query||(pn(id)+" "+(p.username||"")).toLowerCase().indexOf(query)>=0});
+  var heading=el("div","friends-section-title");heading.appendChild(el("span","","Teman saya"));heading.appendChild(el("span","friends-count",fr.length+" teman"));l.appendChild(heading);
+  if(!shown.length){
+    var empty=el("div","friend-empty");empty.appendChild(el("div","symbol",query?"⌕":"♧"));
+    empty.appendChild(el("b","",query?"Teman tidak ditemukan":(fr.length?"Tidak ada hasil pencarian":"Belum ada teman")));
+    empty.appendChild(el("p","",query?"Coba nama atau username yang berbeda.":"Cari pengguna melalui kolom di atas. Setelah permintaan diterima, temanmu akan muncul di daftar ini."));
+    l.appendChild(empty);
+  }
+  shown.forEach(function(id){
+    var p=P[id]||{},card=el("div","friend-card");card.appendChild(av(p,48));
+    var info=el("div","friend-info");info.appendChild(el("b","",pn(id)));info.appendChild(el("small","","@"+(p.username||"pengguna")));
+    card.appendChild(info);
+    card.querySelector(".av").classList.add("chat-profile-trigger");card.querySelector(".av").onclick=function(){openPublicProfile(id)};
+    info.classList.add("chat-profile-trigger");info.onclick=function(){openPublicProfile(id)};
+    var chat=el("button","friend-chat","Chat");chat.onclick=function(){openConv(dm(id),pn(id),av(p,36))};card.appendChild(chat);
+    l.appendChild(card);
+  });
+  var sent=F.filter(function(f){return f.status==="pending"&&f.a===me.id});
+  if(sent.length){
+    l.appendChild(el("div","friends-section-title","Menunggu persetujuan"));
+    sent.forEach(function(f){
+      var card=el("div","friend-card");card.appendChild(av(P[f.b],42));
+      var info=el("div","friend-info");info.appendChild(el("b","",pn(f.b)));info.appendChild(el("small","","@"+((P[f.b]||{}).username||"")+" · Menunggu"));card.appendChild(info);l.appendChild(card);
+    });
+  }
+}
+async function addF(){
+  var u=$("fq").value.trim().toLowerCase().replace(/^@/,"");if(!u)return;
+  var r=await sb.from("profiles").select("*").eq("username",u).maybeSingle();
+  if(!r.data){toast("Username tidak ditemukan");return}
+  var t=r.data;if(t.id===me.id){toast("Itu usernamemu sendiri 🙂");return}
+  if(F.some(function(f){return f.a===t.id||f.b===t.id})){toast("Sudah ada permintaan atau pertemanan");return}
+  P[t.id]=t;var x=await sb.from("friends").insert({a:me.id,b:t.id});
+  if(x.error){toast(x.error.message);return}
+  $("fq").value="";toast("Permintaan dikirim");await loadF();drawFList();
+}
+
+/* ---------- PROFIL ---------- */
+function drawMe(){
+  var v=$("vme");v.innerHTML="";
+  var wrap=el("div","profile-wrap");
+  var top=el("div","profile-topline");
+  top.appendChild(el("div","profile-handle","@"+(prof.username||"user")));
+  var more=el("button","profile-more","···");more.onclick=async function(){if(confirm("Keluar dari akun UChatt? Kamu bisa masuk lagi dengan username dan password yang sama.")){await sb.auth.signOut();location.reload()}};top.appendChild(more);wrap.appendChild(top);
+
+  var stats=el("div","profile-stats");
+  var aw=el("div","profile-avatar-wrap");
+  var a=av(prof,116);a.onclick=function(){$("pfi").click()};a.style.cursor="pointer";aw.appendChild(a);
+  var editAv=el("button","profile-edit-avatar","✎");editAv.onclick=function(){$("pfi").click()};aw.appendChild(editAv);
+  stats.appendChild(aw);
+  [["0","postingan"],["0","pengikut"],["0","mengikuti"]].forEach(function(x){var st=el("div","stat");st.appendChild(el("strong","",x[0]));st.appendChild(el("span","",x[1]));stats.appendChild(st)});
+  wrap.appendChild(stats);
+
+  wrap.appendChild(el("div","profile-name",prof.display_name||prof.username||"Pengguna"));
+  var bioText=prof.bio||"nothing special";
+  wrap.appendChild(el("div","profile-bio",bioText));
+
+  var actions=el("div","profile-actions");
+  var edit=el("button","profile-action","Edit profil");edit.onclick=function(){openProfileEditor()};
+  var share=el("button","profile-action","Bagikan profil");share.onclick=async function(){
+    var url=location.href.split("#")[0]+"#@"+(prof.username||"");
+    try{if(navigator.share)await navigator.share({title:"Profil UChatt",text:"Temukan saya di UChatt @"+prof.username,url:url});else{await navigator.clipboard.writeText(url);toast("Tautan profil disalin")}}catch(e){}
+  };
+  var add=el("button","profile-action icon","♙");add.onclick=function(){go("friends")};
+  actions.appendChild(edit);actions.appendChild(share);actions.appendChild(add);wrap.appendChild(actions);
+
+  var findTitle=el("div","profile-section-title");findTitle.appendChild(el("span","","Temukan orang"));
+  var all=el("button","","Lihat semua");all.onclick=function(){go("friends")};findTitle.appendChild(all);wrap.appendChild(findTitle);
+  var search=el("div","profile-search","Cari pengguna UChatt melalui Explore.");search.onclick=function(){go("friends")};wrap.appendChild(search);
+  v.appendChild(wrap);
+
+  var tabs=el("div","profile-tabs");
+  var posts=el("button","profile-tab active","▦  Postingan");
+  var statuses=el("button","profile-tab","◉  Status");
+  tabs.appendChild(posts);tabs.appendChild(statuses);v.appendChild(tabs);
+  var content=el("div","profile-empty");content.id="profilecontent";
+  function showPosts(){
+    posts.classList.add("active");statuses.classList.remove("active");content.innerHTML="";
+    content.appendChild(el("div","profile-empty-icon","▦"));
+    content.appendChild(el("strong","","Belum ada postingan"));
+    content.appendChild(el("p","","Bagikan foto atau momen pertamamu di UChatt."));
+    var b=el("button","btn s","Buat postingan");b.onclick=function(){toast("Fitur postingan akan ditambahkan tanpa mengubah sistem chat")};content.appendChild(b);
+  }
+  async function showStatuses(){
+    statuses.classList.add("active");posts.classList.remove("active");content.innerHTML="";
+    var r=await sb.from("statuses").select("*").eq("uid",me.id).order("created_at",{ascending:false});
+    if(r.error){content.appendChild(el("p","",r.error.message));return}
+    if(!r.data||!r.data.length){content.appendChild(el("div","profile-empty-icon","◉"));content.appendChild(el("strong","","Belum ada status"));content.appendChild(el("p","","Status yang kamu bagikan akan muncul di sini."));return}
+    r.data.forEach(function(st){var card=el("div","pad");card.style.cssText="text-align:left;border:1px solid #e7eff5;border-radius:16px;margin:10px 16px;background:#fff";
+      card.appendChild(el("b","",new Date(st.created_at).toLocaleDateString("id-ID")));
+      if(st.text)card.appendChild(el("p","",st.text));
+      else card.appendChild(el("p","","Status "+(st.kind||"media")));
+      content.appendChild(card)});
+  }
+  posts.onclick=showPosts;statuses.onclick=showStatuses;showPosts();
+  v.appendChild(content);
+
+  var pf=document.createElement("input");pf.type="file";pf.id="pfi";pf.accept="image/*";pf.hidden=true;
+  pf.onchange=async function(){var f=pf.files[0];if(!f)return;if(f.size>8*1048576){toast("Foto maksimal 8 MB");return}
+    toast("Mengunggah…");var u=await up(f);if(!u)return;
+    var r=await sb.from("profiles").update({avatar_url:u}).eq("id",me.id).select().single();
+    if(r.error){toast(r.error.message);return}prof=r.data;P[me.id]=prof;toast("Foto profil diperbarui");drawMe()};
+  v.appendChild(pf);
+}
+function openProfileEditor(){
+  var overlay=el("div","profile-modal-backdrop");
+  var modal=el("div","profile-modal");
+  modal.appendChild(el("h3","","Edit profil"));
+  function field(label,value,multiline){
+    modal.appendChild(el("label","",label));
+    var x=multiline?document.createElement("textarea"):document.createElement("input");
+    if(!multiline){x.type="text";x.maxLength=label==="Username"?20:30}
+    x.value=value||"";modal.appendChild(x);return x;
+  }
+  var dn=field("Nama",prof.display_name||"");
+  var un=field("Username",prof.username||"");
+  var hint=el("small","hint","Username hanya bisa diganti maksimal 2 kali dalam setiap periode 7 hari.");modal.appendChild(hint);
+  var bio=field("Bio",prof.bio||"nothing special",true);
+  var phone=field("Nomor telepon (opsional)",prof.phone||"");
+  phone.placeholder="Contoh: +62 812…";
+  var phoneVisibility=document.createElement("label");phoneVisibility.style.cssText="display:flex;align-items:center;gap:9px;margin:10px 0;color:#587487;font-size:13px";
+  var phonePublic=document.createElement("input");phonePublic.type="checkbox";phonePublic.checked=prof.phone_visible===true;
+  phoneVisibility.appendChild(phonePublic);phoneVisibility.appendChild(document.createTextNode("Tampilkan nomor telepon di profil publik"));
+  modal.appendChild(phoneVisibility);
+  modal.appendChild(el("small","hint","Nomor telepon tidak ditampilkan kecuali kamu mengaktifkan pilihan di atas."));
+  modal.appendChild(el("label","","Ganti password (opsional)"));
+  var newPass=document.createElement("input");newPass.type="password";newPass.placeholder="Password baru (minimal 8 karakter)";newPass.autocomplete="new-password";modal.appendChild(newPass);
+  var confirmPass=document.createElement("input");confirmPass.type="password";confirmPass.placeholder="Ulangi password baru";confirmPass.autocomplete="new-password";modal.appendChild(confirmPass);
+  var actions=el("div","profile-modal-actions");
+  var cancel=el("button","profile-action","Batal");cancel.onclick=function(){overlay.remove()};
+  var save=el("button","btn","Simpan");save.onclick=async function(){
+    var u=un.value.trim().toLowerCase();
+    if(!/^[a-z0-9_]{3,20}$/.test(u)){toast("Username 3–20 karakter: huruf kecil, angka, atau _");return}
+    if(newPass.value&&(newPass.value.length<8||newPass.value!==confirmPass.value)){toast("Password baru minimal 8 karakter dan konfirmasinya harus sama.");return}
+    save.disabled=true;save.textContent="Menyimpan…";
+    var current=(prof.username||"").toLowerCase();
+    if(u!==current){
+      var change=await sb.rpc("uchatt_change_username",{p_new_username:u});
+      if(change.error){save.disabled=false;save.textContent="Simpan";toast(change.error.message||"Username gagal diganti");return}
+    }
+    var r=await sb.from("profiles").update({
+      display_name:dn.value.trim()||u,
+      phone:phone.value.trim()||null,
+      phone_visible:phonePublic.checked
+    }).eq("id",me.id).select().single();
+    if(r.error){save.disabled=false;save.textContent="Simpan";toast("Username mungkin sudah tersimpan, tetapi nama gagal diperbarui: "+r.error.message);return}
+    var meta=await sb.auth.updateUser({data:{bio:bio.value.trim().slice(0,150)}});
+    if(meta.error){toast("Profil tersimpan, tetapi bio gagal disimpan: "+meta.error.message)}
+    if(newPass.value){var pass=await sb.auth.updateUser({password:newPass.value});if(pass.error){toast("Profil tersimpan, tetapi password gagal diganti: "+pass.error.message)}else{toast("Password berhasil diganti")}}
+    prof=r.data;prof.username=u;prof.bio=bio.value.trim().slice(0,150);P[me.id]=prof;
+    overlay.remove();toast("Profil diperbarui");drawMe();
+  };
+  actions.appendChild(cancel);actions.appendChild(save);modal.appendChild(actions);overlay.appendChild(modal);$("app").appendChild(overlay);
+}
+}
+function launch(){try{startApp()}catch(e){showErr("Gagal memulai: "+e.message)}}
+if(window.supabase)launch();else{var sc=document.createElement("script");sc.src="https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.js";sc.onload=launch;sc.onerror=function(){showErr("Pustaka Supabase gagal dimuat. Cek internet atau matikan adblock, lalu muat ulang.")};document.head.appendChild(sc)}
+</script>
+</body>
+</html>
